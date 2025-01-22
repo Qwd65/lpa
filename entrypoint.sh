@@ -38,13 +38,14 @@ else
     composer install --no-interaction --no-scripts
 fi
 
-
 echo "Installing npm dependencies..."
 npm install
 
 # Build frontend assets
 echo "Building frontend assets..."
 npm run build
+
+
 
 echo "Generating app key..."
 # Generate an application key
@@ -64,6 +65,7 @@ php artisan storage:link
 echo "Setting file permissions..."
 chown -R www-data:www-data /opt/laravel
 chmod -R 755 /opt/laravel/storage
+chmod -R 777 /opt/laravel/storage/framework/views/
 
 
 # Wait for the database to be ready (PostgreSQL in this case)

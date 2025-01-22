@@ -1,18 +1,37 @@
-FROM php:8.3-fpm-alpine
+FROM alpine:latest
 
-# Set working directory
-WORKDIR /opt/laravel
-
-# Install additional packages
+# Установим необходимые зависимости и PHP
 RUN apk --no-cache add \
+    bash \
     nginx \
     supervisor \
     postgresql-client \
     postgresql-dev \
     nodejs \
     npm \
-    && docker-php-ext-install pdo pdo_pgsql \
-    && docker-php-ext-enable opcache
+    php \
+    php-fpm \
+    php-pdo \
+    php-pdo_pgsql \
+    php-opcache \
+    php-phar \
+    php-mbstring \
+    php-json \
+    php-curl \
+    php-dom \
+    php-tokenizer \
+    php-fileinfo \
+    php-openssl \
+    php-xml \
+    php-session \
+    php-simplexml \
+    php-xmlwriter \
+    curl 
+
+RUN if [ ! -e /usr/bin/php ]; then ln -s /usr/bin/php83 /usr/bin/php; fi
+# Set working directory
+WORKDIR /opt/laravel
+
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -33,6 +52,9 @@ COPY conf.d/supervisor/supervisord.conf /etc/supervisord.conf
 # Copy Laravel application files
 COPY  laravel/ /opt/laravel
 
+RUN set -x ; \
+  addgroup -g 82 -S www-data ; \
+  adduser -u 82 -D -S -G www-data www-data && exit 0 ; exit 1
 # Set up permissions
 RUN chown -R www-data:www-data /opt/laravel \
     && chmod -R 775 /opt/laravel/storage && \
