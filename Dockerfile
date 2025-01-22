@@ -80,7 +80,11 @@ RUN set -x ; \
   
 RUN chown -R www-data:www-data /opt/laravel \
     && chmod -R 775 /opt/laravel/storage && \
-    chown -R www-data:www-data /opt/laravel/storage 
+    chown -R www-data:www-data /opt/laravel/storage && \
+    chown -R www-data:www-data /var/log && \
+    chmod -R 777 /var/log && \
+    chmod 777 /var/run && \
+    chown www-data:www-data /var/run 
 
 RUN touch /var/log/cron.log
 
