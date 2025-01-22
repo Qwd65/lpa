@@ -38,6 +38,14 @@ else
     composer install --no-interaction --no-scripts
 fi
 
+
+echo "Installing npm dependencies..."
+npm install
+
+# Build frontend assets
+echo "Building frontend assets..."
+npm run build
+
 echo "Generating app key..."
 # Generate an application key
 php artisan key:generate --force
@@ -51,6 +59,29 @@ rm -rf public/storage
 
 # Build up a new storage link
 php artisan storage:link
+
+# Set permissions
+echo "Setting file permissions..."
+chown -R www-data:www-data /opt/laravel
+chmod -R 755 /opt/laravel/storage
+
+
+# Wait for the database to be ready (PostgreSQL in this case)
+echo "Waiting for the database to be ready..."
+until pg_isready -h db -p 5432 -U user; do
+    echo 'Waiting for database...';
+    sleep 2;
+done
+
+# Run database migrations
+echo "Running migrations..."
+php artisan migrate --force
+
+# Run tests
+echo "Running tests..."
+php artisan test
+
+
 
 # Check if running in production or development mode
 if [ "$PRODUCTION" = "1" ]; then

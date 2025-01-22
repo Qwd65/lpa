@@ -35,7 +35,9 @@ COPY  laravel/ /opt/laravel
 
 # Set up permissions
 RUN chown -R www-data:www-data /opt/laravel \
-    && chmod -R 755 /opt/laravel/storage
+    && chmod -R 775 /opt/laravel/storage && \
+    chown -R www-data:www-data /opt/laravel/storage 
+
 
 # Scheduler setup
 
