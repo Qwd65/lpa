@@ -7,6 +7,11 @@ WORKDIR /opt/laravel
 RUN apk --no-cache add \
     nginx \
     supervisor \
+    postgresql-client \
+    postgresql-dev \
+    nodejs \
+    npm \
+    && docker-php-ext-install pdo pdo_pgsql \
     && docker-php-ext-enable opcache
 
 # Install composer
@@ -26,7 +31,7 @@ COPY conf.d/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY conf.d/supervisor/supervisord.conf /etc/supervisord.conf
 
 # Copy Laravel application files
-COPY . /opt/laravel
+COPY  laravel/ /opt/laravel
 
 # Set up permissions
 RUN chown -R www-data:www-data /opt/laravel \
@@ -44,5 +49,7 @@ RUN echo "* * * * * /usr/local/bin/php /opt/laravel/artisan schedule:run >> /var
 EXPOSE 80
 
 ADD entrypoint.sh /root/entrypoint.sh
+
+RUN chmod +x /root/entrypoint.sh
 
 ENTRYPOINT ["/root/entrypoint.sh"]
